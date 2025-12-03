@@ -1,17 +1,18 @@
 package main
 
-import "github.com/wonli/aqi"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/wonli/aqi"
+)
 
 func main() {
-	aqi.Init(
-		//自动解析工作目录，设置配置文件
+	app := aqi.Init(
 		aqi.ConfigFile("config.yaml"),
+		aqi.HttpServer("my server", "port"),
 	)
 
-	/*
-		支持传入Option函数
-		type Option func(config *AppConfig) error
+	r := gin.Default()
 
-
-	*/
+	app.WithHttpServer(r)
+	app.Start()
 }
