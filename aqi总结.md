@@ -1,3 +1,12 @@
+# aqi解读
+aqi是一个快速搭建http服务的框架,第一次执行生成yaml文件,用于对配置进行设置
+在aqi.init中使用viper对环境变量和配置文件中的各种值进行初始化
+使用WithHttpServer注入http.Handler
+Start函数使用http.ListenAndServe启动服务
+
+http.ListenAndServe:在指定端口启动http服务,监听请求并交给handler处理
+
+
 aqi启动项配置函数的作用是对AppConfig结构体的各种参数进行设置，然后根据设置来进行初始化，其中用到大量的viper库函数
 
 设置环境变量的前缀，会匹配前缀为设置值的环境变量
@@ -10,7 +19,7 @@ viper.AutomaticEnv()
 viper.SetConfigName(acf.ConfigName)
 viper.SetConfigType(acf.ConfigType)
 
-设置配置文件路径，告诉viper在哪里寻找配置文件
+设置配置文件路径
 viper.AddConfigPath(acf.ConfigPath)
 
 读取配置文件后，保存至缓存，增加读取速度

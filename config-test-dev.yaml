@@ -1,6 +1,6 @@
 port: 2015
 devMode: true
-jwtSecurity: 534eb62596cf165140e5eb6de59aaaaf
+jwtSecurity: 0152b97798d1308442ce6f8edcb0889c
 jwtLifetime: 30d
 log:
   logFile: app.log
