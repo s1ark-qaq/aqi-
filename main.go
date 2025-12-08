@@ -16,7 +16,7 @@ func main() {
 	)
 
 	h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hello world"))
+		w.Write([]byte("serve running"))
 	})
 
 	app.WithHttpServer(h)
