@@ -6,14 +6,18 @@ import (
 )
 
 func main() {
+	//app是AppConfig结构体实例
 	app := aqi.Init(
-		//CommitVersion为空,也就是开发版本时,配置文件都会加上-dev后缀,在项目开始时生成yaml配置文件,其中有部分默认的配置.
+		//设置配置文件名
 		aqi.ConfigFile("config-test.yaml"),
-		//服务名称,以及服务端口,默认2015
+		//服务名称,以及服务端口
 		aqi.HttpServer("my server", "port"),
 	)
 
 	r := gin.Default()
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, "serve running")
+	})
 
 	app.WithHttpServer(r)
 	app.Start()

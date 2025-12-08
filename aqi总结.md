@@ -1,54 +1,23 @@
 # aqi解读
-aqi是一个快速搭建http服务的框架,第一次执行生成yaml文件,用于对配置进行设置
-在aqi.init中使用viper对环境变量和配置文件中的各种值进行初始化
-使用WithHttpServer注入http.Handler
-Start函数使用http.ListenAndServe启动服务
+aqi是一个快速搭建http服务的框架,第一次执行生成yaml文件,用于对配置进行设置。
+主要通过对appConfig结构体的一些字段设置初始值，aqi会根据这些初始值进行配置文件的创建、绑定、读取。
+使用配置文件使用传入的http.Handler接口，在指定的端口或默认端口开启http服务并建立websocket连接。
 
-http.ListenAndServe:在指定端口启动http服务,监听请求并交给handler处理
+## aqiInit
+aqiInit的主要工作：有一个默认的配置AppConfig结构体（如果未设置值就会采用这里的默认值）-->遍历输入（其实就是给config结构体绑定自己指定的一些值，
+在后面初始化时用到）-->检测配置文件路径（未设置时会自动拿到工作目录替换，后面会使用这个路径生成配置文件）-->检测是否是commitVersion（生产版本？
+如果没设置版本，就会在生成的配置文件上面加上-dev，开发期使用）-->使用viper的一些函数来设置配置的来源？（指定前缀的环境变量，指定的配置文件）-->
+使用viper拿所有来源的配置文件（如果没有，就会生成固定模版的yaml配置文件）-->设置开发模式（有什么作用？）-->使用viper进行远程配置（怎么用）-->
+配置http服务器的端口和自定义服务名称(优先从配置文件拿，没有则使用默认的1091)-->打印系统信息-->初始化日志库(日志相关参数不了解。。。)-->配置文件
+变更时触发回调（打印日志，找出具体变动位置）-->webSocket的一些初始化（不了解。。。）
 
+## app.WithHttpServer && app.Start
+前者注入一个实现了http.Handler接口的实例，后者根据传入的实例在指定端口启动http服务，监听请求，并开启websocket连接的一些配置？
+主要用到http.ListenAndServe这个函数。
 
-aqi启动项配置函数的作用是对AppConfig结构体的各种参数进行设置，然后根据设置来进行初始化，其中用到大量的viper库函数
+# aqi总结
+对于aqi框架，可以快速开展http服务或者websocket服务，通过大量使用viper库，设置、读取配置文件，从而达到开启http服务。在生成的yaml文件中，还可以
+保存数据库相关内容，可以避免明文暴露服务器中，增加风险。
 
-设置环境变量的前缀，会匹配前缀为设置值的环境变量
-viper.SetEnvPrefix("")
-
-绑定环境变量，让viper优先读取环境变量
-viper.AutomaticEnv()
-
-设置配置文件名和类型，例如config.yaml。如开启了环境变量，环境变量中没有时会搜索配置文件。
-viper.SetConfigName(acf.ConfigName)
-viper.SetConfigType(acf.ConfigType)
-
-设置配置文件路径
-viper.AddConfigPath(acf.ConfigPath)
-
-读取配置文件后，保存至缓存，增加读取速度
-viper.ReadInConfig()
-
-返回viper.ReadInConfig()读取到的缓存值
-viper.AllSettings()
-
-1.LogConfig(configKeyPath string) Option
-  应用日志文件配置路径
-
-2.DataPath(path string) Option
-  运行时数据存储基础路径
-DataPath string//运行时数据存储基础路径
-
-3.ConfigFile(file string) Option
-  传入文件名设置配置文件
-ConfigType string //配置文件类型
-ConfigPath string //配置文件路径
-ConfigName string //配置文件名称
-
-4.Server(name ...string) Option
-Servername             []string
-
-5.HttpServer(name, portFindPath string) Option
-//服务名称，support.Version
-//当指定 HttpServerPortFindPath 时，在配置读取之后从配置路径获取http端口
-Servername             []string
-ServerPort             string
-HttpServerPortFindPath string
-
-6.WatchHandler(handler func()) Option
+# 自我总结
+对于环境变量，websocket，viper以及日志的相关配置需要更加深入的了解。
