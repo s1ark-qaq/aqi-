@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
+	"net/http"
+
 	"github.com/wonli/aqi"
 )
 
@@ -14,11 +15,10 @@ func main() {
 		aqi.HttpServer("my server", "port"),
 	)
 
-	r := gin.Default()
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, "serve running")
+	h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("hello world"))
 	})
 
-	app.WithHttpServer(r)
+	app.WithHttpServer(h)
 	app.Start()
 }
