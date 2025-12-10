@@ -1,10 +1,18 @@
 package main
 
 import (
+	"encoding/json"
+	"io"
 	"net/http"
 
 	"github.com/wonli/aqi"
 )
+
+type Resp struct {
+	Str string `json:"str"`
+}
+
+var resp Resp
 
 func main() {
 	//app是AppConfig结构体实例
@@ -15,10 +23,21 @@ func main() {
 		aqi.HttpServer("my server", "port"),
 	)
 
-	h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("server running"))
-	})
+	//路由器
+	mux := http.NewServeMux()
+	mux.HandleFunc("/test", Handle)
 
-	app.WithHttpServer(h)
+	app.WithHttpServer(mux)
 	app.Start()
+}
+
+func Handle(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		w.Write([]byte("get server running"))
+	case "POST":
+		bt, _ := io.ReadAll(r.Body)
+		json.Unmarshal(bt, &resp)
+		w.Write([]byte(resp.Str))
+	}
 }
