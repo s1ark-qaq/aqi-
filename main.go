@@ -1,18 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"io"
 	"net/http"
 
 	"github.com/wonli/aqi"
 )
-
-type Resp struct {
-	Str string `json:"str"`
-}
-
-var resp Resp
 
 func main() {
 	//app是AppConfig结构体实例
@@ -37,7 +30,6 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("get server running"))
 	case "POST":
 		bt, _ := io.ReadAll(r.Body)
-		json.Unmarshal(bt, &resp)
-		w.Write([]byte(resp.Str))
+		w.Write(bt)
 	}
 }
